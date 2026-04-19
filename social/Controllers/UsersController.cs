@@ -7,11 +7,10 @@ namespace social.Controllers;
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
-    private static readonly List<User> users =
-    [
-        new() { Id = 1, Name = "Alice", Email = "alice@example.com" },
-        new() { Id = 2, Name = "Bob", Email = "bob@example.com" }
-    ];
+    private static readonly List<User> users = new List<User>()
+    {
+        new User { Id = 1, Name = "Alice", Email = "alice@example.com" }
+    };
 
     [HttpGet]
     public IEnumerable<User> Get() => users;
