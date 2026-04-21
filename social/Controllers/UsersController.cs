@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using social.Models;
+using social.Services.@interface;
 
 namespace social.Controllers;
 
@@ -7,40 +8,40 @@ namespace social.Controllers;
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
-    private static readonly List<User> users = new List<User>()
+    private readonly IUserService _userService;
+
+    public UsersController(IUserService userService)
     {
-        new User { Id = 1, Name = "Alice", Email = "alice@example.com" }
-    };
+        _userService = userService;
+    }
 
     [HttpGet]
-    public IEnumerable<User> Get() => users;
+    public IActionResult Get()
+    {
+        return Ok(_userService.GetAll());
+    }
 
     [HttpGet("{id}")]
-    public ActionResult<User> GetById(int id)
+    public IActionResult GetById(int id)
     {
-        var user = users.FirstOrDefault(u => u.Id == id);
+        var user = _userService.GetById(id);
         if (user is null) return NotFound();
 
-        return user;
+        return Ok(user);
     }
 
     [HttpPost]
-    public ActionResult<User> Create(User user)
+    public IActionResult Create(User user)
     {
-        user.Id = users.Any() ? users.Max(u => u.Id) + 1 : 1;
-        users.Add(user);
-
-        return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
+        var created = _userService.Create(user);
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, User updatedUser)
+    public IActionResult Update(int id, User user)
     {
-        var user = users.FirstOrDefault(u => u.Id == id);
-        if (user is null) return NotFound();
-
-        user.Name = updatedUser.Name;
-        user.Email = updatedUser.Email;
+        var result = _userService.Update(id, user);
+        if (!result) return NotFound();
 
         return NoContent();
     }
@@ -48,10 +49,9 @@ public class UsersController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        var user = users.FirstOrDefault(u => u.Id == id);
-        if (user is null) return NotFound();
+        var result = _userService.Delete(id);
+        if (!result) return NotFound();
 
-        users.Remove(user);
         return NoContent();
     }
 }

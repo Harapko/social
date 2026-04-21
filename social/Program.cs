@@ -1,4 +1,8 @@
+using social.Services.@interface;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSingleton<IUserService, UserService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
