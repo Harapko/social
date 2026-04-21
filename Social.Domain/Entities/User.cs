@@ -1,4 +1,4 @@
-﻿namespace social.Models;
+﻿namespace Social.Domain.Entities;
 
 public class User
 {

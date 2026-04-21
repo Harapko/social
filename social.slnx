@@ -1,3 +1,6 @@
 <Solution>
-  <Project Path="social/social.csproj" />
+  <Project Path="Social.Api/Social.Api.csproj" />
+  <Project Path="Social.Application/Social.Application.csproj" Id="bb10a012-e037-4c3a-8584-c77f16dd2384" />
+  <Project Path="Social.Domain/Social.Domain.csproj" Id="c446de35-8ed9-486b-adf2-6284c9e29718" />
+  <Project Path="Social.Infrastructure/Social.Infrastructure.csproj" Id="35add7df-4bb5-40fb-a6f1-2f7d619806fa" />
 </Solution>
