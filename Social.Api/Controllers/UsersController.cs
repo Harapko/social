@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using Social.Api.DTOs;
 using Social.Application.Interfaces;
 using Social.Domain.Entities;
-using Social.Api.DTOs;
 
 namespace Social.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]/[action]")]
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -32,7 +33,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Create(CreateUserRequest request)
+    public IActionResult Create(CreateUserRequestDto request)
     {
         var user = new User
         {
@@ -40,22 +41,22 @@ public class UsersController : ControllerBase
             Email = request.Email
         };
 
-        var created = _userService.Create(user);
+        var createdUser = _userService.Create(user);
 
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        return CreatedAtAction(nameof(GetById), new { id = createdUser.Id }, createdUser.Id);
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, CreateUserRequest request)
+    public IActionResult Update(int id, CreateUserRequestDto updateUserRequestDto)
     {
         var user = new User
         {
-            Name = request.Name,
-            Email = request.Email
+            Name = updateUserRequestDto.Name,
+            Email = updateUserRequestDto.Email
         };
 
-        var result = _userService.Update(id, user);
-        if (!result) return NotFound();
+        var isUpdated = _userService.Update(id, user);
+        if (!isUpdated) return NotFound();
 
         return NoContent();
     }
@@ -63,8 +64,8 @@ public class UsersController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        var result = _userService.Delete(id);
-        if (!result) return NotFound();
+        var isDeleted = _userService.Delete(id);
+        if (!isDeleted) return NotFound();
 
         return NoContent();
     }
