@@ -1,4 +1,5 @@
-using social.Services.@interface;
+using Social.Application.Interfaces;
+using Social.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
