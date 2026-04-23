@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Social.Api.DTOs;
 using Social.Application.Interfaces;
 using Social.Domain.Entities;
@@ -38,12 +37,13 @@ public class UsersController : ControllerBase
         var user = new User
         {
             Name = request.Name,
-            Email = request.Email
+            Email = request.Email,
+            Phone = request.Phone
         };
 
         var createdUser = _userService.Create(user);
 
-        return CreatedAtAction(nameof(GetById), new { id = createdUser.Id }, createdUser.Id);
+        return Ok(createdUser);
     }
 
     [HttpPut("{id}")]

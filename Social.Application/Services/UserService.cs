@@ -1,6 +1,5 @@
 ﻿using Social.Application.Interfaces;
 using Social.Domain.Entities;
-using System.Xml.Linq;
 
 namespace Social.Application.Services;
 
@@ -15,13 +14,15 @@ public class UserService : IUserService
 
     public User? GetById(int id)
     {
-        return _users.FirstOrDefault(x => x.Id == id);
+        return _users.FirstOrDefault(u => u.Id == id);
     }
 
     public User Create(User user)
     {
-        user.Id = _users.Any() ? _users.Max(x => x.Id) + 1 : 1;
+        user.Id = _users.Any() ? _users.Max(u => u.Id) + 1 : 1;
+
         _users.Add(user);
+
         return user;
     }
 
@@ -42,6 +43,7 @@ public class UserService : IUserService
         if (user is null) return false;
 
         _users.Remove(user);
+
         return true;
     }
 }
