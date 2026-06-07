@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using Social.Api.DTOs;
 using Social.Application.DTOs;
 using Social.Application.Interfaces;
 
@@ -34,49 +33,31 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<UserDto>> Create(CreateUserRequestDto request, CancellationToken cancellationToken)
+    public async Task<ActionResult<UserDto>> Create(CreateUserDto request, CancellationToken cancellationToken)
     {
-        UserDto createdUser;
-
-        try
+        var createdUser = await _userService.CreateAsync(new CreateUserDto
         {
-            createdUser = await _userService.CreateAsync(new CreateUserDto
-            {
-                Email = request.Email,
-                Name = request.Name,
-                Surname = request.Surname,
-                PhoneNumber = request.PhoneNumber,
-                Password = request.Password
-            }, cancellationToken);
-        }
-        catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
-        {
-            return Conflict(new { message = "User with this email already exists." });
-        }
+            Email = request.Email,
+            Name = request.Name,
+            Surname = request.Surname,
+            PhoneNumber = request.PhoneNumber,
+            Password = request.Password
+        }, cancellationToken);
 
         return CreatedAtAction(nameof(GetById), new { id = createdUser.Id }, createdUser);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, UpdateUserRequestDto updateUserRequestDto, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(Guid id, UpdateUserDto updateUserRequestDto, CancellationToken cancellationToken)
     {
-        bool isUpdated;
-
-        try
+        var isUpdated = await _userService.UpdateAsync(id, new UpdateUserDto
         {
-            isUpdated = await _userService.UpdateAsync(id, new UpdateUserDto
-            {
-                Email = updateUserRequestDto.Email,
-                Name = updateUserRequestDto.Name,
-                Surname = updateUserRequestDto.Surname,
-                PhoneNumber = updateUserRequestDto.PhoneNumber,
-                Password = updateUserRequestDto.Password
-            }, cancellationToken);
-        }
-        catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
-        {
-            return Conflict(new { message = "User with this email already exists." });
-        }
+            Email = updateUserRequestDto.Email,
+            Name = updateUserRequestDto.Name,
+            Surname = updateUserRequestDto.Surname,
+            PhoneNumber = updateUserRequestDto.PhoneNumber,
+            Password = updateUserRequestDto.Password
+        }, cancellationToken);
 
         if (!isUpdated) return NotFound();
 

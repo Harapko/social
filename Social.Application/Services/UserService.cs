@@ -2,6 +2,7 @@
 using Social.Application.Interfaces;
 using Social.Domain.Entities;
 
+
 namespace Social.Application.Services;
 
 public sealed class UserService : IUserService

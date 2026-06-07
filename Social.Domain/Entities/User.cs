@@ -8,9 +8,7 @@ public class User
     public string Name { get; set; } = string.Empty;
     public string Surname { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
-
     public string PasswordHash { get; set; } = string.Empty;
-
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
 }
