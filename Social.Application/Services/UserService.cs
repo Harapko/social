@@ -2,7 +2,6 @@
 using Social.Application.Interfaces;
 using Social.Domain.Entities;
 
-
 namespace Social.Application.Services;
 
 public sealed class UserService : IUserService
@@ -28,16 +27,10 @@ public sealed class UserService : IUserService
 
     public async Task<UserDto> CreateAsync(CreateUserDto dto, CancellationToken cancellationToken)
     {
-        var user = new User
-        {
-            Email = dto.Email.Trim(),
-            Name = dto.Name.Trim(),
-            Surname = dto.Surname.Trim(),
-            PhoneNumber = dto.PhoneNumber.Trim(),
-            PasswordHash = dto.Password
-        };
+        var user = ToEntity(dto);
 
         await _repo.AddAsync(user, cancellationToken);
+
         return ToDto(user);
     }
 
@@ -46,13 +39,7 @@ public sealed class UserService : IUserService
         var existing = await _repo.GetByIdAsync(id, cancellationToken);
         if (existing is null) return false;
 
-        existing.Email = dto.Email.Trim();
-        existing.Name = dto.Name.Trim();
-        existing.Surname = dto.Surname.Trim();
-        existing.PhoneNumber = dto.PhoneNumber.Trim();
-
-        if (!string.IsNullOrWhiteSpace(dto.Password))
-            existing.PasswordHash = dto.Password;
+        UpdateEntity(existing, dto);
 
         return await _repo.UpdateAsync(existing, cancellationToken);
     }
@@ -63,6 +50,26 @@ public sealed class UserService : IUserService
         if (existing is null) return false;
 
         return await _repo.DeleteAsync(existing, cancellationToken);
+    }
+
+    private static User ToEntity(CreateUserDto dto) => new()
+    {
+        Email = dto.Email.Trim(),
+        Name = dto.Name.Trim(),
+        Surname = dto.Surname.Trim(),
+        PhoneNumber = dto.PhoneNumber.Trim(),
+        PasswordHash = dto.Password
+    };
+
+    private static void UpdateEntity(User user, UpdateUserDto dto)
+    {
+        user.Email = dto.Email.Trim();
+        user.Name = dto.Name.Trim();
+        user.Surname = dto.Surname.Trim();
+        user.PhoneNumber = dto.PhoneNumber.Trim();
+
+        if (!string.IsNullOrWhiteSpace(dto.Password))
+            user.PasswordHash = dto.Password;
     }
 
     private static UserDto ToDto(User user) => new()
