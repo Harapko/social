@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Social.Api.DTOs;
+using Social.Application.DTOs;
 using Social.Application.Interfaces;
-using Social.Domain.Entities;
 
 namespace Social.Api.Controllers;
 
@@ -17,54 +16,56 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult Get()
+    public async Task<ActionResult<List<UserDto>>> Get(CancellationToken cancellationToken)
     {
-        return Ok(_userService.GetAll());
+        return Ok(await _userService.GetAllAsync(cancellationToken));
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetById(int id)
+    public async Task<ActionResult<UserDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var user = _userService.GetById(id);
+        var user = await _userService.GetByIdAsync(id, cancellationToken);
         if (user is null) return NotFound();
 
         return Ok(user);
     }
 
     [HttpPost]
-    public IActionResult Create(CreateUserRequestDto request)
+    public async Task<ActionResult<UserDto>> Create(CreateUserDto request, CancellationToken cancellationToken)
     {
-        var user = new User
+        var createdUser = await _userService.CreateAsync(new CreateUserDto
         {
-            Name = request.Name,
             Email = request.Email,
-            Phone = request.Phone
-        };
+            Name = request.Name,
+            Surname = request.Surname,
+            PhoneNumber = request.PhoneNumber,
+            Password = request.Password
+        }, cancellationToken);
 
-        var createdUser = _userService.Create(user);
-
-        return Ok(createdUser);
+        return CreatedAtAction(nameof(GetById), new { id = createdUser.Id }, createdUser);
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, CreateUserRequestDto updateUserRequestDto)
+    public async Task<IActionResult> Update(Guid id, UpdateUserDto updateUserRequestDto, CancellationToken cancellationToken)
     {
-        var user = new User
+        var isUpdated = await _userService.UpdateAsync(id, new UpdateUserDto
         {
+            Email = updateUserRequestDto.Email,
             Name = updateUserRequestDto.Name,
-            Email = updateUserRequestDto.Email
-        };
+            Surname = updateUserRequestDto.Surname,
+            PhoneNumber = updateUserRequestDto.PhoneNumber,
+            Password = updateUserRequestDto.Password
+        }, cancellationToken);
 
-        var isUpdated = _userService.Update(id, user);
         if (!isUpdated) return NotFound();
 
         return NoContent();
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        var isDeleted = _userService.Delete(id);
+        var isDeleted = await _userService.DeleteAsync(id, cancellationToken);
         if (!isDeleted) return NotFound();
 
         return NoContent();
