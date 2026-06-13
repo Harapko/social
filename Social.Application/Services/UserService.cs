@@ -54,6 +54,7 @@ public sealed class UserService : IUserService
 
     private static User ToEntity(CreateUserDto dto) => new()
     {
+        Username = dto.Username.Trim(),
         Email = dto.Email.Trim(),
         Name = dto.Name.Trim(),
         Surname = dto.Surname.Trim(),
@@ -63,6 +64,7 @@ public sealed class UserService : IUserService
 
     private static void UpdateEntity(User user, UpdateUserDto dto)
     {
+        user.Username = dto.Username.Trim();
         user.Email = dto.Email.Trim();
         user.Name = dto.Name.Trim();
         user.Surname = dto.Surname.Trim();
@@ -74,6 +76,7 @@ public sealed class UserService : IUserService
 
     private static UserDto ToDto(User user) => new()
     {
+        Username = user.Username,
         Id = user.Id,
         Email = user.Email,
         Name = user.Name,

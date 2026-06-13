@@ -29,6 +29,13 @@ public sealed class SocialDbContext : DbContext
             entity.HasIndex(x => x.Email)
                 .IsUnique();
 
+            entity.Property(x => x.Username)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.HasIndex(x => x.Username)
+                .IsUnique();
+
             entity.Property(x => x.Name)
                 .IsRequired()
                 .HasMaxLength(100);
@@ -86,4 +93,3 @@ public sealed class SocialDbContext : DbContext
         }
     }
 }
-
